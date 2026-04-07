@@ -8,59 +8,102 @@
 body {
   margin: 0;
   font-family: 'Space Grotesk', sans-serif;
-  background-image: url("/Users/payamemrani/Downloads/Gemini_Generated_Image_baksnrbaksnrbaks.png");
+
+  background-image: url("https://images.unsplash.com/photo-1582582429416-4b4f7c9b7c74");
   background-size: cover;
   background-position: center;
 }
 
+/* overlay */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.15);
-  pointer-events: none;
 }
 
+/* branding */
 .branding {
   position: fixed;
   top: 30px;
   left: 50%;
   transform: translateX(-50%) rotate(-2deg);
+
   background: #f4e7c5;
   padding: 10px 30px;
+
   font-family: 'Permanent Marker', cursive;
   font-size: 18px;
-  letter-spacing: 2px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
+/* layout */
 .scene {
   display: flex;
   flex-wrap: wrap;
   gap: 60px;
   justify-content: center;
-  padding: 100px 40px 40px;
+  padding: 100px 40px;
 }
 
+/* stack */
+.polaroid-stack {
+  position: relative;
+}
+
+/* main polaroid */
 .polaroid {
   width: 280px;
   height: 340px;
   background: white;
   padding: 12px 12px 50px 12px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+
+  box-shadow:
+    0 35px 70px rgba(0,0,0,0.35),
+    0 10px 20px rgba(0,0,0,0.2);
+
+  transform: rotate(-2deg);
 }
 
+/* back layers */
+.back1, .back2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+.back1 {
+  top: 6px;
+  left: 6px;
+  transform: rotate(2deg);
+  z-index: -1;
+}
+
+.back2 {
+  top: 12px;
+  left: 12px;
+  transform: rotate(-1deg);
+  z-index: -2;
+}
+
+/* photo area */
 .photo {
   width: 100%;
   height: 240px;
   background: black;
   padding: 12px;
+  box-sizing: border-box;
+
   color: white;
   font-weight: 700;
   font-size: 17px;
+  line-height: 1.6;
+
   overflow: auto;
 }
 
+/* textarea */
 textarea {
   width: 100%;
   height: 100%;
@@ -71,6 +114,7 @@ textarea {
   font-size: 17px;
 }
 
+/* label */
 .label {
   font-family: 'Permanent Marker', cursive;
   font-size: 14px;
@@ -78,6 +122,7 @@ textarea {
   margin-top: 10px;
 }
 
+/* button */
 .generate-container {
   text-align: center;
   margin: 40px 0;
@@ -90,6 +135,7 @@ textarea {
   border: 1px solid black;
   font-family: 'Permanent Marker', cursive;
   cursor: pointer;
+  transform: rotate(-1deg);
 }
 </style>
 
@@ -101,49 +147,33 @@ textarea {
 
 <div class="scene">
 
-  <div class="polaroid">
-    <div class="photo">
-      <textarea id="notes" placeholder="Enter notes..."></textarea>
+  <div class="polaroid-stack">
+    <div class="polaroid">
+      <div class="photo">
+        <textarea placeholder="Enter notes..."></textarea>
+      </div>
+      <div class="label">NOTES</div>
     </div>
-    <div class="label">NOTES</div>
+    <div class="polaroid back1"></div>
+    <div class="polaroid back2"></div>
   </div>
 
-  <div class="polaroid">
-    <div class="photo">
-      <input type="file" id="imageUpload" multiple accept="image/*" style="color:#fff;font-size:13px;width:100%;" />
-      <div id="imagePreview" style="margin-top:8px;"></div>
+  <div class="polaroid-stack">
+    <div class="polaroid">
+      <div class="photo" id="overview"></div>
+      <div class="label">OVERVIEW</div>
     </div>
-    <div class="label">MOODBOARD</div>
+    <div class="polaroid back1"></div>
+    <div class="polaroid back2"></div>
   </div>
 
-  <div class="polaroid">
-    <div class="photo" id="overview"></div>
-    <div class="label">OVERVIEW</div>
-  </div>
-
-  <div class="polaroid">
-    <div class="photo" id="tasks"></div>
-    <div class="label">TASKS</div>
-  </div>
-
-  <div class="polaroid">
-    <div class="photo" id="equipment"></div>
-    <div class="label">EQUIPMENT</div>
-  </div>
-
-  <div class="polaroid">
-    <div class="photo" id="timeline"></div>
-    <div class="label">TIMELINE</div>
-  </div>
-
-  <div class="polaroid">
-    <div class="photo" id="contacts"></div>
-    <div class="label">CONTACTS</div>
-  </div>
-
-  <div class="polaroid">
-    <div class="photo" id="keywords"></div>
-    <div class="label">KEYWORDS</div>
+  <div class="polaroid-stack">
+    <div class="polaroid">
+      <div class="photo" id="tasks"></div>
+      <div class="label">TASKS</div>
+    </div>
+    <div class="polaroid back1"></div>
+    <div class="polaroid back2"></div>
   </div>
 
 </div>
@@ -155,73 +185,18 @@ textarea {
 </div>
 
 <script>
-let uploadedImages = [];
-
-document.getElementById("imageUpload")?.addEventListener("change", function () {
-  const preview = document.getElementById("imagePreview");
-  preview.innerHTML = "";
-  uploadedImages = [];
-
-  Array.from(this.files).forEach(file => {
-    if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      uploadedImages.push(e.target.result);
-      const img = document.createElement("img");
-      img.src = e.target.result;
-      img.style.cssText = "width:50px;margin:3px;";
-      preview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-});
-
-async function generatePlan() {
-  const notes = document.getElementById("notes").value.trim();
-  if (!notes) { alert("Please enter notes"); return; }
-
-  const btn = document.getElementById("generateBtn");
-  btn.style.opacity = "0.5";
-  btn.textContent = "GENERATING...";
-
-  try {
-    const response = await fetch("http://localhost:3000/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes })
-    });
-    const data = await response.json();
-
-    document.getElementById("overview").innerHTML = `Based on "${notes.substring(0,50)}..." - shoot focused on capturing your vision.`;
-
-    document.getElementById("tasks").innerHTML = "1. Confirm location<br>2. Finalize shot list<br>3. Prepare equipment<br>4. Arrive early<br>5. Capture shots<br>6. Review results";
-
-    document.getElementById("equipment").innerHTML = "- Camera<br>- Lens<br>- Lighting<br>- Reflectors<br>- Tripod";
-
-    document.getElementById("timeline").innerHTML = "30 min: Arrive<br>45 min: Setup<br>2 hrs: Shoot<br>15 min: Review";
-
-    if (data.contacts?.length) {
-      document.getElementById("contacts").innerHTML = data.contacts.map(c => `${c.name||"Unnamed"}<br>${c.email||""} ${c.phone||""}`).join("<br><br>");
-    } else {
-      document.getElementById("contacts").innerText = "No contacts found";
-    }
-
-    let kw = ["editorial", "moody", "soft"];
-    if (uploadedImages.length > 0) {
-      kw = [["soft lighting", "editorial"], ["high contrast", "dramatic"], ["natural light"]][Math.floor(Math.random()*3)];
-    }
-    document.getElementById("keywords").innerHTML = kw.join("<br>");
-
-  } catch (e) {
-    document.getElementById("overview").innerText = "Error: " + e.message;
-  }
-
-  btn.style.opacity = "1";
-  btn.textContent = "GENERATE PLAN";
-}
-
 window.onload = function () {
-  document.getElementById("generateBtn").onclick = generatePlan;
+
+  document.getElementById("generateBtn").onclick = function () {
+
+    document.getElementById("overview").innerHTML =
+      "1. Structured shoot overview<br>2. Creative direction defined";
+
+    document.getElementById("tasks").innerHTML =
+      "1. Prep<br>2. Shoot<br>3. Wrap";
+
+  };
+
 };
 </script>
 
