@@ -97,7 +97,7 @@ textarea {
 
   <div class="polaroid">
     <div class="photo">
-      <textarea id="notes" placeholder="Enter notes..."></textarea>
+      <textarea placeholder="Enter notes..."></textarea>
     </div>
     <div class="label">NOTES</div>
   </div>
@@ -118,33 +118,24 @@ textarea {
 </div>
 
 <script>
-
-/* CONTACT EXTRACTION (FIXED) */
 function extractContacts(text) {
   const lines = text.split("\n");
   const contacts = [];
 
   lines.forEach(line => {
 
-    const email = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/);
-    const phone = line.match(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/);
+    const emailMatch = line.match(
+      /([A-Z][a-z]+)[^\n]*?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,})/
+    );
 
-    const contact = email ? email[0] : phone ? phone[0] : null;
+    const phoneMatch = line.match(
+      /([A-Z][a-z]+)[^\n]*?(\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b)/
+    );
 
-    if (contact) {
-      const words = line.split(" ");
-      const contactIndex = words.findIndex(w => w.includes(contact));
-
-      let name = "Unknown";
-
-      for (let i = contactIndex - 1; i >= 0; i--) {
-        if (/^[A-Z][a-z]+$/.test(words[i])) {
-          name = words[i];
-          break;
-        }
-      }
-
-      contacts.push(`${name} - ${contact}`);
+    if (emailMatch) {
+      contacts.push(`${emailMatch[1]} – ${emailMatch[2]}`);
+    } else if (phoneMatch) {
+      contacts.push(`${phoneMatch[1]} – ${phoneMatch[2]}`);
     }
 
   });
@@ -156,7 +147,7 @@ window.onload = function () {
 
   document.getElementById("generateBtn").onclick = function () {
 
-    const notes = document.getElementById("notes").value;
+    const notes = document.querySelector("textarea").value;
 
     const contacts = extractContacts(notes);
 
