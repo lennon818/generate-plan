@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  background-image: url('background.png');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+
+.branding {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  background: #f4e7c5;
+  padding: 10px 30px;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 18px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.scene {
+  position: relative;
+  min-height: 1400px;
+  padding: 100px 40px 40px;
+}
+
+.polaroid {
+  width: 300px;
+  background: white;
+  padding: 12px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+  position: absolute;
+  cursor: move;
+  z-index: 1;
+}
+
+.polaroid:hover {
+  z-index: 100;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.photo {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #000;
+  color: white;
+  font-size: 16px;
+  overflow: auto;
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  font-family: 'Space Grotesk';
+  font-size: 16px;
+  resize: none;
+}
+
+.label {
+  font-family: 'Permanent Marker', cursive;
+  text-align: center;
+  margin-top: 10px;
+}
+
+#notes { top: 60px; left: 467px; transform: rotate(-3deg); }
+#moodboard { top: 66px; left: 1232px; transform: rotate(2deg); }
+
+#generate-container { top: 280px; }
+
+#overview { top: 435px; left: 483px; transform: rotate(-3deg); }
+#tasks { top: 431px; left: 1462px; transform: rotate(2deg); }
+#equipment { top: 366px; left: 883px; transform: rotate(-2deg); }
+#timeline { top: 400px; left: 1035px; transform: rotate(3deg); }
+#contacts { top: 700px; left: 480px; transform: rotate(-2deg); }
+#keywords { top: 756px; left: 1288px; transform: rotate(1deg); }
+
+.generate-container {
+  position: absolute;
+  top: 350px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+}
+
+.generate-action {
+  background: #f4e7c5;
+  padding: 15px 30px;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+#imageUpload {
+  display: none;
+}
+
+.moodboard-upload {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+}
+
+.moodboard-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  padding: 5px;
+}
+
+.moodboard-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid white;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="branding">PAYAM EMRANI</div>
+
+<div class="scene">
+
+  <div class="polaroid" id="notes">
+    <div class="photo">
+      <textarea id="notesInput" placeholder="Enter notes..."></textarea>
+    </div>
+    <div class="label">NOTES</div>
+  </div>
+
+  <div class="polaroid" id="moodboard">
+    <div class="photo">
+      <label class="moodboard-upload">
+        <input type="file" id="imageUpload" multiple accept="image/*" />
+        <span>Click to add images</span>
+        <div class="moodboard-preview" id="moodboardPreview"></div>
+      </label>
+    </div>
+    <div class="label">MOODBOARD</div>
+  </div>
+
+  <div class="generate-container">
+    <div class="generate-action" id="generateBtn">GENERATE PLAN</div>
+  </div>
+
+  <div class="polaroid" id="overview">
+    <div class="photo" id="overviewContent"></div>
+    <div class="label">OVERVIEW</div>
+  </div>
+
+  <div class="polaroid" id="tasks">
+    <div class="photo" id="tasksContent"></div>
+    <div class="label">TASKS</div>
+  </div>
+
+  <div class="polaroid" id="equipment">
+    <div class="photo" id="equipmentContent"></div>
+    <div class="label">EQUIPMENT</div>
+  </div>
+
+  <div class="polaroid" id="timeline">
+    <div class="photo" id="timelineContent"></div>
+    <div class="label">TIMELINE</div>
+  </div>
+
+  <div class="polaroid" id="contacts">
+    <div class="photo" id="contactsContent"></div>
+    <div class="label">CONTACTS</div>
+  </div>
+
+  <div class="polaroid" id="keywords">
+    <div class="photo" id="keywordsContent"></div>
+    <div class="label">KEYWORDS</div>
+  </div>
+
+</div>
+
+<script>
+let uploadedImages = [];
+let draggedElement = null;
+let offsetX = 0;
+let offsetY = 0;
+
+document.querySelectorAll('.polaroid').forEach(polaroid => {
+  polaroid.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    draggedElement = polaroid;
+    const rect = polaroid.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    polaroid.style.zIndex = 1000;
+  });
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (!draggedElement) return;
+  const x = e.clientX - offsetX;
+  const y = e.clientY - offsetY;
+  draggedElement.style.left = x + 'px';
+  draggedElement.style.top = y + 'px';
+});
+
+document.addEventListener('mouseup', function() {
+  if (draggedElement) {
+    draggedElement.style.zIndex = '';
+    draggedElement = null;
+  }
+});
+
+document.getElementById("imageUpload")?.addEventListener("change", function() {
+  const preview = document.getElementById("moodboardPreview");
+  preview.innerHTML = "";
+  uploadedImages = [];
+  
+  Array.from(this.files).forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImages.push(e.target.result);
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+function extractContacts(text) {
+  const lines = text.split("\n");
+  const contacts = [];
+
+  lines.forEach(line => {
+    const emailMatch = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/);
+    const phoneMatch = line.match(/(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/);
+
+    if (emailMatch) {
+      const index = emailMatch.index;
+      const before = line.slice(0, index).trim();
+      const words = before.split(/\s+/);
+      let name = "Unknown";
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (/^[A-Z][a-z]+$/.test(words[i])) {
+          name = words[i];
+          break;
+        }
+      }
+      contacts.push(`${name} - ${emailMatch[0]}`);
+    }
+
+    if (phoneMatch) {
+      const index = phoneMatch.index;
+      const fullPhone = phoneMatch[0];
+      const before = line.slice(0, index).trim();
+      const words = before.split(/\s+/);
+      let name = "Unknown";
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (/^[A-Z][a-z]+$/.test(words[i])) {
+          name = words[i];
+          break;
+        }
+      }
+      contacts.push(`${name} - ${fullPhone}`);
+    }
+  });
+
+  return contacts;
+}
+
+window.onload = function() {
+  document.getElementById("generateBtn").onclick = function() {
+    const notes = document.getElementById("notesInput").value;
+    const contacts = extractContacts(notes);
+
+    document.getElementById("overviewContent").innerHTML =
+      "1. Shoot concept defined<br>2. Creative direction aligned";
+
+    document.getElementById("tasksContent").innerHTML =
+      "1. Prep gear<br>2. Confirm location<br>3. Shoot";
+
+    document.getElementById("equipmentContent").innerHTML =
+      "1. Camera<br>2. Lighting<br>3. Tripod";
+
+    document.getElementById("timelineContent").innerHTML =
+      "1. Setup<br>2. Shoot<br>3. Wrap";
+
+    document.getElementById("contactsContent").innerHTML =
+      contacts.length
+        ? contacts.map((c, i) => `${i + 1}. ${c}`).join("<br>")
+        : "No contacts found";
+
+    document.getElementById("keywordsContent").innerHTML =
+      "1. Editorial<br>2. Moody<br>3. Soft Light";
+  };
+};
+</script>
+
+</body>
+</html>
