@@ -127,7 +127,7 @@ function extractContacts(text) {
   lines.forEach(line => {
 
     const emailMatch = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/);
-    const phoneMatch = line.match(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/);
+    const phoneMatch = line.match(/(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/);
 
     if (emailMatch) {
       const index = emailMatch.index;
@@ -145,6 +145,7 @@ function extractContacts(text) {
 
     if (phoneMatch) {
       const index = phoneMatch.index;
+      const fullPhone = phoneMatch[0];
       const before = line.slice(0, index).trim();
       const words = before.split(/\s+/);
       let name = "Unknown";
@@ -154,7 +155,7 @@ function extractContacts(text) {
           break;
         }
       }
-      contacts.push(`${name} - ${phoneMatch[0]}`);
+      contacts.push(`${name} - ${fullPhone}`);
     }
 
   });
