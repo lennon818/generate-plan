@@ -39,6 +39,13 @@ body {
   box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2);
   box-sizing: border-box;
   position: absolute;
+  cursor: move;
+  z-index: 1;
+}
+
+.polaroid:hover {
+  z-index: 100;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .photo {
@@ -67,19 +74,19 @@ textarea {
   margin-top: 10px;
 }
 
-#notes { top: 100px; left: 80px; transform: rotate(-3deg); }
-#moodboard { top: 120px; left: 420px; transform: rotate(2deg); }
+#notes { top: 100px; left: 50%; margin-left: -380px; transform: rotate(-3deg); }
+#moodboard { top: 120px; left: 50%; margin-left: -50px; transform: rotate(2deg); }
 
-#overview { top: 500px; left: 60px; transform: rotate(-2deg); }
-#tasks { top: 520px; left: 400px; transform: rotate(3deg); }
-#equipment { top: 680px; left: 180px; transform: rotate(-1deg); }
-#timeline { top: 700px; left: 500px; transform: rotate(2deg); }
-#contacts { top: 860px; left: 80px; transform: rotate(-3deg); }
-#keywords { top: 880px; left: 420px; transform: rotate(1deg); }
+#overview { top: 480px; left: 50%; margin-left: -350px; transform: rotate(-2deg); }
+#tasks { top: 500px; left: 50%; margin-left: -30px; transform: rotate(3deg); }
+#equipment { top: 660px; left: 50%; margin-left: -190px; transform: rotate(-1deg); }
+#timeline { top: 680px; left: 50%; margin-left: 130px; transform: rotate(2deg); }
+#contacts { top: 840px; left: 50%; margin-left: -350px; transform: rotate(-3deg); }
+#keywords { top: 860px; left: 50%; margin-left: 50px; transform: rotate(1deg); }
 
 .generate-container {
   position: absolute;
-  top: 380px;
+  top: 360px;
   left: 50%;
   transform: translateX(-50%) rotate(-1deg);
 }
@@ -189,6 +196,35 @@ textarea {
 
 <script>
 let uploadedImages = [];
+let draggedElement = null;
+let offsetX = 0;
+let offsetY = 0;
+
+document.querySelectorAll('.polaroid').forEach(polaroid => {
+  polaroid.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    draggedElement = polaroid;
+    const rect = polaroid.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    polaroid.style.zIndex = 1000;
+  });
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (!draggedElement) return;
+  const x = e.clientX - offsetX;
+  const y = e.clientY - offsetY;
+  draggedElement.style.left = x + 'px';
+  draggedElement.style.top = y + 'px';
+});
+
+document.addEventListener('mouseup', function() {
+  if (draggedElement) {
+    draggedElement.style.zIndex = '';
+    draggedElement = null;
+  }
+});
 
 document.getElementById("imageUpload")?.addEventListener("change", function() {
   const preview = document.getElementById("moodboardPreview");
