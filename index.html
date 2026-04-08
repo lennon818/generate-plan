@@ -10,9 +10,9 @@ body {
   font-family: 'Space Grotesk', sans-serif;
   background: url('https://www.transparenttextures.com/patterns/wood.png');
   background-color: #7a5a3a;
+  min-height: 100vh;
 }
 
-/* branding */
 .branding {
   position: fixed;
   top: 30px;
@@ -23,27 +23,24 @@ body {
   font-family: 'Permanent Marker', cursive;
   font-size: 18px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  z-index: 100;
 }
 
-/* layout */
 .scene {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 40px;
-  justify-content: center;
+  position: relative;
+  min-height: 1200px;
   padding: 100px 40px 40px;
 }
 
-/* polaroid */
 .polaroid {
   width: 300px;
   background: white;
   padding: 12px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2);
   box-sizing: border-box;
+  position: absolute;
 }
 
-/* photo */
 .photo {
   width: 100%;
   aspect-ratio: 1;
@@ -53,7 +50,6 @@ body {
   overflow: auto;
 }
 
-/* textarea */
 textarea {
   width: 100%;
   height: 100%;
@@ -62,28 +58,70 @@ textarea {
   color: white;
   font-family: 'Space Grotesk';
   font-size: 16px;
+  resize: none;
 }
 
-/* label */
 .label {
   font-family: 'Permanent Marker', cursive;
   text-align: center;
   margin-top: 10px;
 }
 
-/* button */
+#notes { top: 100px; left: 80px; transform: rotate(-3deg); }
+#moodboard { top: 120px; left: 420px; transform: rotate(2deg); }
+
+#overview { top: 500px; left: 60px; transform: rotate(-2deg); }
+#tasks { top: 520px; left: 400px; transform: rotate(3deg); }
+#equipment { top: 680px; left: 180px; transform: rotate(-1deg); }
+#timeline { top: 700px; left: 500px; transform: rotate(2deg); }
+#contacts { top: 860px; left: 80px; transform: rotate(-3deg); }
+#keywords { top: 880px; left: 420px; transform: rotate(1deg); }
+
 .generate-container {
-  text-align: center;
-  margin: 40px;
+  position: absolute;
+  top: 380px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
 }
 
 .generate-action {
-  display: inline-block;
-  background: white;
-  padding: 10px 20px;
-  border: 1px solid black;
+  background: #f4e7c5;
+  padding: 15px 30px;
   font-family: 'Permanent Marker', cursive;
+  font-size: 20px;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+#imageUpload {
+  display: none;
+}
+
+.moodboard-upload {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+}
+
+.moodboard-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  padding: 5px;
+}
+
+.moodboard-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid white;
 }
 </style>
 
@@ -95,36 +133,86 @@ textarea {
 
 <div class="scene">
 
-  <div class="polaroid">
+  <div class="polaroid" id="notes">
     <div class="photo">
-      <textarea id="notes" placeholder="Enter notes..."></textarea>
+      <textarea id="notesInput" placeholder="Enter notes..."></textarea>
     </div>
     <div class="label">NOTES</div>
   </div>
 
-  <div class="polaroid"><div class="photo" id="overview"></div><div class="label">OVERVIEW</div></div>
-  <div class="polaroid"><div class="photo" id="tasks"></div><div class="label">TASKS</div></div>
-  <div class="polaroid"><div class="photo" id="equipment"></div><div class="label">EQUIPMENT</div></div>
-  <div class="polaroid"><div class="photo" id="timeline"></div><div class="label">TIMELINE</div></div>
-  <div class="polaroid"><div class="photo" id="contacts"></div><div class="label">CONTACTS</div></div>
-  <div class="polaroid"><div class="photo" id="keywords"></div><div class="label">KEYWORDS</div></div>
-
-</div>
-
-<div class="generate-container">
-  <div class="generate-action" id="generateBtn">
-    GENERATE PLAN
+  <div class="polaroid" id="moodboard">
+    <div class="photo">
+      <label class="moodboard-upload">
+        <input type="file" id="imageUpload" multiple accept="image/*" />
+        <span>Click to add images</span>
+        <div class="moodboard-preview" id="moodboardPreview"></div>
+      </label>
+    </div>
+    <div class="label">MOODBOARD</div>
   </div>
+
+  <div class="generate-container">
+    <div class="generate-action" id="generateBtn">GENERATE PLAN</div>
+  </div>
+
+  <div class="polaroid" id="overview">
+    <div class="photo" id="overviewContent"></div>
+    <div class="label">OVERVIEW</div>
+  </div>
+
+  <div class="polaroid" id="tasks">
+    <div class="photo" id="tasksContent"></div>
+    <div class="label">TASKS</div>
+  </div>
+
+  <div class="polaroid" id="equipment">
+    <div class="photo" id="equipmentContent"></div>
+    <div class="label">EQUIPMENT</div>
+  </div>
+
+  <div class="polaroid" id="timeline">
+    <div class="photo" id="timelineContent"></div>
+    <div class="label">TIMELINE</div>
+  </div>
+
+  <div class="polaroid" id="contacts">
+    <div class="photo" id="contactsContent"></div>
+    <div class="label">CONTACTS</div>
+  </div>
+
+  <div class="polaroid" id="keywords">
+    <div class="photo" id="keywordsContent"></div>
+    <div class="label">KEYWORDS</div>
+  </div>
+
 </div>
 
 <script>
+let uploadedImages = [];
+
+document.getElementById("imageUpload")?.addEventListener("change", function() {
+  const preview = document.getElementById("moodboardPreview");
+  preview.innerHTML = "";
+  uploadedImages = [];
+  
+  Array.from(this.files).forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImages.push(e.target.result);
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+});
 
 function extractContacts(text) {
   const lines = text.split("\n");
   const contacts = [];
 
   lines.forEach(line => {
-
     const emailMatch = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/);
     const phoneMatch = line.match(/(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/);
 
@@ -156,42 +244,36 @@ function extractContacts(text) {
       }
       contacts.push(`${name} - ${fullPhone}`);
     }
-
   });
 
   return contacts;
 }
 
-window.onload = function () {
-
-  document.getElementById("generateBtn").onclick = function () {
-
-    const notes = document.getElementById("notes").value;
-
+window.onload = function() {
+  document.getElementById("generateBtn").onclick = function() {
+    const notes = document.getElementById("notesInput").value;
     const contacts = extractContacts(notes);
 
-    document.getElementById("overview").innerHTML =
+    document.getElementById("overviewContent").innerHTML =
       "1. Shoot concept defined<br>2. Creative direction aligned";
 
-    document.getElementById("tasks").innerHTML =
+    document.getElementById("tasksContent").innerHTML =
       "1. Prep gear<br>2. Confirm location<br>3. Shoot";
 
-    document.getElementById("equipment").innerHTML =
+    document.getElementById("equipmentContent").innerHTML =
       "1. Camera<br>2. Lighting<br>3. Tripod";
 
-    document.getElementById("timeline").innerHTML =
+    document.getElementById("timelineContent").innerHTML =
       "1. Setup<br>2. Shoot<br>3. Wrap";
 
-    document.getElementById("contacts").innerHTML =
+    document.getElementById("contactsContent").innerHTML =
       contacts.length
         ? contacts.map((c, i) => `${i + 1}. ${c}`).join("<br>")
         : "No contacts found";
 
-    document.getElementById("keywords").innerHTML =
+    document.getElementById("keywordsContent").innerHTML =
       "1. Editorial<br>2. Moody<br>3. Soft Light";
-
   };
-
 };
 </script>
 
