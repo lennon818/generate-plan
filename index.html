@@ -129,30 +129,32 @@ function extractContacts(text) {
     const emailMatch = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/);
     const phoneMatch = line.match(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/);
 
-    const contact = emailMatch ? emailMatch[0] : phoneMatch ? phoneMatch[0] : null;
-
-    if (contact) {
-
-      // find position of contact in string
-      const index = line.indexOf(contact);
-
-      // take everything BEFORE contact
+    if (emailMatch) {
+      const index = emailMatch.index;
       const before = line.slice(0, index).trim();
-
-      // split that part into words
       const words = before.split(/\s+/);
-
       let name = "Unknown";
-
-      // walk backwards to find real name
       for (let i = words.length - 1; i >= 0; i--) {
         if (/^[A-Z][a-z]+$/.test(words[i])) {
           name = words[i];
           break;
         }
       }
+      contacts.push(`${name} - ${emailMatch[0]}`);
+    }
 
-      contacts.push(`${name} - ${contact}`);
+    if (phoneMatch) {
+      const index = phoneMatch.index;
+      const before = line.slice(0, index).trim();
+      const words = before.split(/\s+/);
+      let name = "Unknown";
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (/^[A-Z][a-z]+$/.test(words[i])) {
+          name = words[i];
+          break;
+        }
+      }
+      contacts.push(`${name} - ${phoneMatch[0]}`);
     }
 
   });
