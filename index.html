@@ -5,6 +5,7 @@
 <title>Polaroid Layout</title>
 
 <style>
+/* ===== V1 BACKGROUND ===== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -12,12 +13,14 @@ body {
   background-color: #7a5a3a;
 }
 
+/* ===== V1 CONTAINER ===== */
 #output {
   position: relative;
   min-height: 900px;
   padding: 60px;
 }
 
+/* ===== V1 POLAROID STYLE ===== */
 .polaroid {
   width: 260px;
   background: #fff;
@@ -26,6 +29,7 @@ body {
   position: absolute;
 }
 
+/* ===== V1 TAPE ===== */
 .tape {
   position: absolute;
   top: -12px;
@@ -38,6 +42,7 @@ body {
   padding: 5px 20px;
 }
 
+/* ===== CONTENT ===== */
 .content {
   font-size: 14px;
   color: #111;
@@ -54,11 +59,13 @@ body {
 <div id="output"></div>
 
 <script>
+// ===== V8 FORMAT =====
 function formatItem(item) {
   if (typeof item === "string") return item;
   return `${item.name || ""} ${item.email || ""} ${item.phone || ""}`.trim();
 }
 
+// ===== V8 CREATE (DO NOT CHANGE TITLE LOGIC) =====
 function createPolaroid(section, items) {
   const div = document.createElement("div");
   div.className = "polaroid";
@@ -73,6 +80,7 @@ function createPolaroid(section, items) {
   return div;
 }
 
+// ===== FIXED LAYOUT (YOUR SPEC) =====
 const layoutMap = {
   notes:      { top: "40px",  left: "60px",  rotate: "-3deg" },
   moodboard:  { top: "40px",  left: "360px", rotate: "2deg" },
@@ -86,6 +94,7 @@ const layoutMap = {
   experience: { top: "620px", left: "260px", rotate: "-1deg" }
 };
 
+// ===== V8 RENDER (FUNCTIONAL + ORDER FIXED) =====
 function renderPolaroids(data) {
   const container = document.getElementById("output");
   container.innerHTML = "";
@@ -116,6 +125,7 @@ function renderPolaroids(data) {
   });
 }
 
+// ===== SAMPLE DATA (REPLACE WITH YOUR REAL V8 OUTPUT) =====
 const data = {
   notes: ["Lighting notes", "Keep it minimal"],
   moodboard: ["Black & white", "Soft shadows"],
@@ -126,6 +136,7 @@ const data = {
   experience: ["Studio assistant"]
 };
 
+// ===== INIT =====
 renderPolaroids(data);
 </script>
 
