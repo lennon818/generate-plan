@@ -33,6 +33,22 @@ body {
   padding: 100px 40px 40px;
 }
 
+.polaroid {
+  width: 300px;
+  background: white;
+  padding: 12px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+  position: absolute;
+  cursor: move;
+  z-index: 1;
+}
+
+.polaroid:hover {
+  z-index: 100;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.3);
+}
+
 #notes { top: 80px; left: 100px; transform: rotate(-3deg); }
 #moodboard { top: 80px; left: 1050px; transform: rotate(2deg); }
 
